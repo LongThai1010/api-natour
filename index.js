@@ -72,6 +72,13 @@ app.use('/api/v1/tours', tourRouter)
 app.use('/api/v1/users', userRouter)
 app.use('/api/v1/reviews', reviewRouter)
 
+app.use('/', (req, res) => {
+    res.json({
+        status: 200,
+        message: 'Thanks for watching API of Me,'
+    })
+})
+
 app.all('*', (req, res, next) => {
     // const err = new Error();
     // err.status = 'fail';
