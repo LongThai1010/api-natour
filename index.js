@@ -7,6 +7,7 @@ const helmet = require('helmet')
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean')
 const hpp = require('hpp');
+const cors = require('cors')
 
 process.on('uncaughtException', err => {
     console.log(err.name, err.message)
@@ -57,6 +58,7 @@ const limiter = rateLimit({
 app.use('/api', limiter)
 app.use(express.json())
 app.use(mongoSanitize())
+app.use(cors())
 
 app.use(xss())
 
