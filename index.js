@@ -7,7 +7,8 @@ const helmet = require('helmet')
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean')
 const hpp = require('hpp');
-const cors = require('cors')
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 process.on('uncaughtException', err => {
     console.log(err.name, err.message)
@@ -59,8 +60,15 @@ app.use('/api', limiter)
 app.use(express.json())
 app.use(mongoSanitize())
 app.use(cors())
-
 app.use(xss())
+app.use(cookieParser())
+
+// Test middleware
+app.use((req, res, next) => {
+    req.requesTime = new Date().toISOString();
+    console.log(req.cookies)
+    next();
+})
 
 // Prevent parameter pollution
 app.use(hpp({
