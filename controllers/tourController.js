@@ -5,6 +5,8 @@ const catchAsync = require('../utils/catchAsync')
 const multer = require('multer');
 const sharp = require('sharp');
 
+const cloudinary = require('../utils/cloudinary')
+
 const factory = require('./handleFactory')
 
 
@@ -31,6 +33,7 @@ exports.uploadTourImages = upload.fields([
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
     if (!req.files.imageCover || !req.files.images) return next();
 
+    console.log(req.files);
     // 1) Cover image
     req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
     await sharp(req.files.imageCover[0].buffer)
@@ -66,9 +69,40 @@ exports.aliasTopTours = catchAsync(async (req, res, next) => {
         next();
 })
 
-exports.getAllTours = factory.getAll(Tour)
+exports.createTour = catchAsync(async (req, res) => {
+    console.log(req.file)
+    const { name, description, price, summary, imageCover, ratingsQuantity, difficulty, maxGroupSize, duration } = req.body;
+    if (imageCover) {
+        const result = await cloudinary.uploader.upload(imageCover, {
+            upload_preset: "tour-image"
+        })
 
-exports.createTour = factory.createOne(Tour)
+        if (result) {
+            const tour = new Tour({
+                name,
+                description,
+                price,
+                summary,
+                ratingsQuantity,
+                difficulty,
+                maxGroupSize,
+                duration,
+                imageCover: result
+            })
+            const saveTour = await tour.save()
+
+            res.status(201).json({
+                message: "Success",
+                tour: saveTour
+            })
+        }
+    }
+
+
+})
+
+
+exports.getAllTours = factory.getAll(Tour)
 
 exports.getTour = factory.getOne(Tour, { path: 'reviews' })
 

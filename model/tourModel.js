@@ -66,8 +66,8 @@ var tourSchema = new mongoose.Schema({
         trim: true,
     },
     imageCover: {
-        type: String,
-        required: [true, 'A tour must have a cover image'],
+        type: Object,
+        required: true,
     },
     images: [String],
     createAt: {

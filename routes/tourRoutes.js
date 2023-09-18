@@ -1,9 +1,28 @@
 const express = require('express');
 const tourController = require('./../controllers/tourController');
 const authController = require('./../controllers/authController');
-const reviewRouter = require('./../routes/reviewRoutes')
+const reviewRouter = require('./../routes/reviewRoutes');
+const multer = require('multer');
 
 const router = express.Router();
+
+
+//khai báo sử dụng multer
+// SET STORAGE
+// var storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, "public/img/tours");
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, file.originalname);
+//     },
+// });
+// const upload = multer({
+//     uploadToCloudinary,
+//     storage: storage
+// });
+
+
 
 // router.route('/')
 //     .get(reviewController.getAllReviews)
@@ -31,9 +50,10 @@ router
 router
     .route('/')
     .get(tourController.getAllTours)
-    .post(authController.protect,
-        authController.restrictTo('admin', 'lead-guide'),
+    .post(
         tourController.createTour);
+
+
 
 router
     .route('/:id')
