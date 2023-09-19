@@ -4,10 +4,12 @@ const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync')
 const multer = require('multer');
 const sharp = require('sharp');
+const fs = require('fs');
 
 const cloudinary = require('../utils/cloudinary')
 
-const factory = require('./handleFactory')
+const factory = require('./handleFactory');
+const cloudinaryUploadImg = require('../utils/cloudinary');
 
 
 const multerStorage = multer.memoryStorage();
@@ -25,10 +27,40 @@ const upload = multer({
     fileFilter: multerFilter
 });
 
-exports.uploadTourImages = upload.fields([
-    { name: 'imageCover', maxCount: 1 },
-    { name: 'images', maxCount: 3 }
-]);
+// exports.uploadTourImages = upload.fields([
+//     { name: 'imageCover', maxCount: 1 },
+//     { name: 'images', maxCount: 3 }
+// ]);
+exports.uploadTourImages = catchAsync(async (req, res, next) => {
+    const { id } = req.params
+    try {
+        const uploader = (path) => cloudinaryUploadImg(path, "images");
+        const urls = [];
+        const files = req.files;
+        for (const file of files) {
+            const { path } = file;
+            const newpath = await uploader(path);
+            console.log(newpath);
+            urls.push(newpath);
+            fs.unlinkSync(path);
+        }
+        const findProduct = await Tour.findByIdAndUpdate(
+            id,
+            {
+                images: urls.map((file) => {
+                    return file;
+                })
+            },
+            {
+                new: true
+            }
+        )
+
+        res.json(findProduct);
+    } catch (error) {
+        throw new Error(error);
+    }
+})
 
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
     if (!req.files.imageCover || !req.files.images) return next();

@@ -3,6 +3,7 @@ const tourController = require('./../controllers/tourController');
 const authController = require('./../controllers/authController');
 const reviewRouter = require('./../routes/reviewRoutes');
 const multer = require('multer');
+const { uploadPhoto, tourImgResize } = require('../middleware/uploadImages');
 
 const router = express.Router();
 
@@ -60,8 +61,10 @@ router
     .get(tourController.getTour)
     .patch(authController.protect,
         authController.restrictTo('admin', 'lead-guide'),
+        // tourController.resizeTourImages,
+        uploadPhoto.array("images", 10),
+        tourImgResize,
         tourController.uploadTourImages,
-        tourController.resizeTourImages,
         tourController.updateTour)
     .delete(authController.protect,
         authController.restrictTo('admin', 'lead-guide'),

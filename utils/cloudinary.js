@@ -1,7 +1,6 @@
-const dotenv = require('dotenv')
-dotenv.config();
-const cloudinary = require("cloudinary");
 
+const cloudinary = require("cloudinary");
+require("dotenv").config()
 //configure cloudinary
 
 cloudinary.config({
@@ -12,6 +11,19 @@ cloudinary.config({
 
 //Instance of cloudinary storage
 
+const cloudinaryUploadImg = async (fileToUploads) => {
+    return new Promise((resolve) => {
+        cloudinary.uploader.upload(fileToUploads, (result) => {
+            resolve(
+                {
+                    url: result.secure_url,
+                },
+                {
+                    resource_type: "auto"
+                }
+            )
+        })
+    })
+}
 
-
-module.exports = cloudinary;
+module.exports = cloudinaryUploadImg;

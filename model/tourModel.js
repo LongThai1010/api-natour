@@ -66,10 +66,10 @@ var tourSchema = new mongoose.Schema({
         trim: true,
     },
     imageCover: {
-        type: Object,
+        type: String,
         required: true,
     },
-    images: [String],
+    images: [],
     createAt: {
         type: Date,
         default: new Date(),
